@@ -1,0 +1,40 @@
+#
+# Project: Solana Token Workshop (SAT)
+# File: .gitignore
+# Author: Amin Davodian (Mohammadamin Davodian)
+# Website: https://senioramin.com
+# LinkedIn: https://linkedin.com/in/SudoAmin
+# GitHub: https://github.com/SeniorAminam
+# Created: 2025-12-27
+#
+# Purpose: Ignore build artifacts and dependencies for the workshop repo.
+# Developed by Amin Davodian
+#
+ 
+# OS / Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnp*
+
+# Env
+.env
+.env.*
+
+# Anchor / Rust
+**/target/
+**/.anchor/
+**/*.so
+**/*.dylib
+**/*.dll
+**/.git.bak*/
+
+# Misc
+*.log

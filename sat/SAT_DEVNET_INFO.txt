@@ -1,0 +1,57 @@
+Senior Amin Token (SAT) - Devnet Run Info
+Date: 2025-12-22
+
+Environment
+- Cluster RPC: https://api.devnet.solana.com
+- Solana CLI: 2.3.0 (Agave)
+- Anchor CLI: 0.32.1
+
+Wallet (Devnet)
+- Keypair path: ~/.config/solana/devnet.json
+- Wallet pubkey: 9HHDK9zwk3GLzFk2TZKeLifVAngpWMiWWUHLLm3Jwvs3
+
+Anchor Program
+- Program name: sat
+- Program ID: GoyGGBpwUQYxoicpFRiNQ8k8qKk1myVRDkiiLvXaT1jg
+
+Deploy / IDL
+- Deploy signature (success): 3xhNDufeF4ceEMbq5SF49A83vt1mJH6dMh9dyrBUcPjH66kbrvu2jcu9tncmLWuCKBmTenPgDT7TmS1NjwdUnkwC
+- IDL account created: DHQu7rUqHe5zNjPmGfQ1HvUMThG71aseoLhwqsSYAXRm
+- Deploy signature (from anchor test, success): 3vEbmzuRhR5WtiarDANRGk7eahyRH7pRjmLKNZM8MUrAFxacT4zC91XAEsRFNvAZao1nK1DdFZ6mgkYT9943FKdn
+
+SAT Token (created by test)
+- Mint address (PDA): CJG3HkzGDshcrZ3XkERcM4wA4opZfJC81EuTfmzKSrnv
+- Decimals: 9
+- Total supply (whole): 369,000,000 SAT
+- Total supply (base units): 369000000000000000
+- Payer ATA (token holder account): 4gtEXXwqLnhkyWwHkJt7ZskXTWyNkrxWeP214fywuPFv
+- Mint transaction signature: anQpTyDkEmqy6DCGxCFFQbQvWT2t7DtseeHwzTFoWEJ9Sjq1TDjtbZo2pXmcJwVS396SG8VRviBVAREHvu665Ri
+
+Raydium Devnet CPMM Pool (WSOL/SAT)
+- Create pool tx (success): 2UL7qT9nH8Ch9G2WQCFMH86KvpjJyzAF6Amfj5bF4oBLv1RBUBbETnGrXzq3fCQiKtfUh6UtyB8LGTEY1zGBFJF7
+- Pool ID: 4dhEUxwSA2BrEmYHQU5Kn7YZD73c9R9W8iM8HLYqqZqf
+- Config ID: 5MxLgy9oPdTC3YgkiePHqr3EoCRD9uLVYRQS2ANAs7wy
+- Authority: CXniRufdq5xL8t8jZAPxsPZDpuudwuJSPWnbcD5Y5Nxq
+- LP Mint: 4wNbidbbT8bbhzn5bXo9wkcXfqprpfNce5fyWo3gdY7E
+- Vault A (WSOL): 7FvbHPuCPQypHHfGEN7TGQRoMZTjoJ2phiA4vfXoSN69
+- Vault B (SAT): GyCfcPegR7bxvQJLd5za5BfssiGaRNLanaE5h5QA3gFB
+- Observation ID: 5neFJS1eFW8e5tLUVYvdwuS7WV2aU4D59SEDGLeGheHc
+- CPMM Program ID: DRaycpLY18LhpbydsBWbVJtxpNv9oXPgjRSfpF2bWpYb
+- Pool fee account: 3oE58BKVt8KuYkGxx8zBojugnymWmBiyafWgMrnb6eYy
+- Initial liquidity: 3.69 SOL + 369,000 SAT
+- Initial implied price: 1 SOL = 100,000 SAT (1 SAT = 0.00001 SOL)
+
+Notes
+- The test is idempotent: if the Mint PDA already exists on the cluster, it skips creating/minting again.
+- Mint authority is revoked (set to None) after initial mint.
+- Freeze authority is revoked (set to None) after initial mint.
+
+Explorer Links (Devnet)
+- Program: https://explorer.solana.com/address/GoyGGBpwUQYxoicpFRiNQ8k8qKk1myVRDkiiLvXaT1jg?cluster=devnet
+- Mint: https://explorer.solana.com/address/CJG3HkzGDshcrZ3XkERcM4wA4opZfJC81EuTfmzKSrnv?cluster=devnet
+- Payer ATA: https://explorer.solana.com/address/4gtEXXwqLnhkyWwHkJt7ZskXTWyNkrxWeP214fywuPFv?cluster=devnet
+- Deploy tx (success): https://explorer.solana.com/tx/3xhNDufeF4ceEMbq5SF49A83vt1mJH6dMh9dyrBUcPjH66kbrvu2jcu9tncmLWuCKBmTenPgDT7TmS1NjwdUnkwC?cluster=devnet
+- Mint tx: https://explorer.solana.com/tx/anQpTyDkEmqy6DCGxCFFQbQvWT2t7DtseeHwzTFoWEJ9Sjq1TDjtbZo2pXmcJwVS396SG8VRviBVAREHvu665Ri?cluster=devnet
+- Raydium CPMM create pool tx: https://explorer.solana.com/tx/2UL7qT9nH8Ch9G2WQCFMH86KvpjJyzAF6Amfj5bF4oBLv1RBUBbETnGrXzq3fCQiKtfUh6UtyB8LGTEY1zGBFJF7?cluster=devnet
+- Raydium CPMM pool: https://explorer.solana.com/address/4dhEUxwSA2BrEmYHQU5Kn7YZD73c9R9W8iM8HLYqqZqf?cluster=devnet
+- Raydium CPMM LP mint: https://explorer.solana.com/address/4wNbidbbT8bbhzn5bXo9wkcXfqprpfNce5fyWo3gdY7E?cluster=devnet
