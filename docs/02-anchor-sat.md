@@ -11,128 +11,138 @@ Purpose: Walkthrough of the SAT Anchor project: PDA mint creation, minting suppl
 Developed by Amin Davodian
 -->
 
-# 🧱 روش ۲: ساخت توکن با Anchor Program (پروژه واقعی)
+<div align="center">
 
-این روش بر پایه پروژه Anchor موجود در پوشه `sat/` است.
+# 🧱 روش ۲: ساخت توکن با Anchor Program
 
-**ارائه‌دهنده:** Amin Davodian (SeniorAmin)
+### 💎 حرفه‌ای، امن، قابل کنترل
 
-- Website: https://senioramin.com
-- GitHub: https://github.com/SeniorAminam
-
----
-
-## 🎯 خروجی مورد انتظار این بخش
-
-- ساخت mint به شکل PDA (deterministic)
-- mint کردن supply اولیه
-- قفل کردن `Mint Authority` و `Freeze Authority`
-
-**نکته اجرایی (برای ارائه):**
-
-- این برنامه mint را با یک seed ثابت (`sat-mint`) می‌سازد و بعد از mint اولیه، authorityها را `None` می‌کند.
-- نتیجه: با همین program نمی‌شود «یک توکن جدید» ساخت/مینت کرد، مگر اینکه کد تغییر کند و دوباره deploy شود.
-- برای ساخت یک توکن جدید + metadata بدون درگیری کامپایل، در ارائه از مسیر `docs/01-token-2022-cli.md` استفاده می‌کنم.
+<img src="https://raw.githubusercontent.com/coral-xyz/anchor/master/assets/icon.png" width="100" alt="Anchor"/>
 
 ---
 
-## 0) (اختیاری) ساخت یک پروژه مشابه SAT از صفر
+**ارائه‌دهنده:** [امین داوودیان](https://senioramin.com) | [@SeniorAminam](https://github.com/SeniorAminam)
 
-اگر بخواهم «از صفر» یک پروژه شبیه SAT بسازم، مسیر پیشنهادی (برای تمرین خارج از زمان کلاس) این است:
+</div>
 
-```bash
-mkdir -p ~/workshop
-cd ~/workshop
-anchor init sat-from-scratch
-cd sat-from-scratch
+---
+
+## 🎯 هدف این بخش
+
+<div align="center">
+
+| ویژگی | توضیح | مزیت |
+|:---:|---|---|
+| 🔐 **PDA Mint** | آدرس قطعی و deterministic | امنیت بالا |
+| 💰 **Controlled Minting** | فقط یک بار mint | جلوگیری از تقلب |
+| 🔒 **Authority Revoke** | قفل کامل authorities | غیرقابل تغییر |
+| 🧪 **Testable** | تست خودکار با Mocha | قابل اطمینان |
+
+</div>
+
+> [!IMPORTANT]
+> این برنامه mint را با seed ثابت (`sat-mint`) می‌سازد. بعد از mint اولیه، authorityها را `None` می‌کند.  
+> **نتیجه:** نمی‌توان با همین program، mint جدید ساخت یا supply اضافه کرد!
+
+---
+
+## 💡 چرا Anchor؟
+
+```
+┌──────────────────────────────────────────────────────────┐
+│              Raw Solana vs Anchor Framework              │
+├──────────────────────────────────────────────────────────┤
+│                                                           │
+│  🔴 Rust خام                   🟢 Anchor Framework       │
+│                                                           │
+│  • 500+ خطکد                   • 100 خط کد ✅           │
+│  • Validation دستی             • Validation خودکار ✅     │
+│  • امنیت دستی                  • امنیت built-in ✅       │
+│  • تست سخت                     • تست آسان با Mocha ✅    │
+│  • بدون IDL                    • IDL خودکار ✅           │
+│  • یادگیری سخت                 • یادگیری متوسط ✅        │
+│                                                           │
+└──────────────────────────────────────────────────────────┘
 ```
 
-بعد:
+---
 
-- در `Anchor.toml`، cluster را روی `devnet` و wallet را روی `~/.config/solana/devnet.json` قرار می‌دهم.
-- داخل `programs/<program-name>/src/lib.rs` منطق پروژه SAT را پیاده می‌کنم.
+## 📊 اطلاعات واقعی پروژه (Devnet)
 
-نکته اجرایی برای کلاس:
+> [!NOTE]
+> این اطلاعات از `sat/SAT_DEVNET_INFO.txt` گرفته شده‌اند.
 
-- برای اینکه وسط ارائه درگیر کدنویسی و دیباگ نشویم، در روز کلاس از پروژه آماده‌ی `sat/` استفاده می‌کنم و فقط اجرای امن (`anchor test --skip-local-validator`) انجام می‌شود.
+<div align="center">
+
+| مورد | مقدار |
+|---|---|
+| 👤 **Wallet** | `9HHDK9zwk3GLzFk2TZKeLifVAngpWMiWWUHLLm3Jwvs3` |
+| 📦 **Program ID** | `GoyGGBpwUQYxoicpFRiNQ8k8qKk1myVRDkiiLvXaT1jg` |
+| 🪙 **SAT Mint PDA** | `CJG3HkzGDshcrZ3XkERcM4wA4opZfJC81EuTfmzKSrnv` |
+| 💰 **Total Supply** | `369,000,000 SAT` (decimals=9) |
+
+[![View Program](https://img.shields.io/badge/🔍_View_Program_on_Explorer-14F195?style=for-the-badge&logo=solana&logoColor=white)](https://explorer.solana.com/address/GoyGGBpwUQYxoicpFRiNQ8k8qKk1myVRDkiiLvXaT1jg?cluster=devnet)
+
+</div>
 
 ---
 
-این روش بر پایه پروژه Anchor موجود در پوشه `sat/` است. مزیت‌ها:
+## 🛠️ پیش‌نیازها
 
-- کنترل کامل روی ساخت Mint (با PDA)
-- امکان enforce کردن قوانین (مثل یک‌بار mint کردن)
-- امکان قفل کردن authority ها برای اعتمادسازی
-
-- اما:
-
-- کامپایل Rust زمان‌برتر است
-- در کلاس باید زمان مدیریت شود (به همین خاطر warm-up قبل از شروع کلاس مهم است)
-
----
-
-## 1) 🧾 اطلاعات واقعی پروژه (Devnet)
-
-از فایل `sat/SAT_DEVNET_INFO.txt`:
-
-- Wallet pubkey:
-  - `9HHDK9zwk3GLzFk2TZKeLifVAngpWMiWWUHLLm3Jwvs3`
-- Program ID:
-  - `GoyGGBpwUQYxoicpFRiNQ8k8qKk1myVRDkiiLvXaT1jg`
-- SAT Mint PDA:
-  - `CJG3HkzGDshcrZ3XkERcM4wA4opZfJC81EuTfmzKSrnv`
-- Total supply:
-  - `369,000,000` با `decimals=9`
-
----
-
-## 2) 📁 رفتن به پروژه و چک تنظیمات
-
-در WSL:
+### ✅ چک‌لیست محیط
 
 ```bash
+# داخل WSL
 cd /mnt/d/Amin/Projects/Programming/Telegram/Bots/Tests/Solana/Token/sat
 ```
 
-### 2.1) ✅ Preflight (Copy/Paste)
+> [!IMPORTANT]
+> ⚠️ تمام دستور Anchor/Rust باید **داخل WSL** اجرا شوند!
 
-این بلاک اجرا می‌شود:
+---
+
+## 📋 مراحل نمایش (بدون کامپایل)
+
+### 🔧 مرحله ۱: تنظیم Preflight
 
 ```bash
+# تنظیم Devnet
 solana config set --url devnet
 solana config set --keypair ~/.config/solana/devnet.json
+
+# بررسی تنظیمات
 solana config get
 solana address
 solana balance
 
+# متغیرهای Anchor
 export ANCHOR_PROVIDER_URL="https://api.devnet.solana.com"
 export ANCHOR_WALLET="$HOME/.config/solana/devnet.json"
+
 echo "ANCHOR_PROVIDER_URL=$ANCHOR_PROVIDER_URL"
 echo "ANCHOR_WALLET=$ANCHOR_WALLET"
-test -f "$ANCHOR_WALLET" && echo "OK: anchor wallet exists" || echo "MISSING: anchor wallet"
+
+test -f "$ANCHOR_WALLET" && echo "✅ OK: anchor wallet exists" || echo "❌ MISSING: anchor wallet"
 ```
 
-**خروجی مورد انتظار**
+**خروجی مورد انتظار:**
 
-- `solana balance` بهتر است `>= 1 SOL` باشد.
-- پیام `OK: anchor wallet exists` باید مشاهده شود.
+<div align="center">
 
-بررسی تنظیمات Devnet:
+| چک | وضعیت مورد انتظار |
+|---|---|
+| `solana balance` | >= 1 SOL |
+| `anchor wallet exists` | ✅ OK |
+| `RPC URL` | devnet |
 
-```bash
-solana config get
-```
-
-در `Anchor.toml` همین پروژه:
-
-- cluster روی `devnet`
-- wallet روی `~/.config/solana/devnet.json`
+</div>
 
 ---
 
-## 3) 📦 نصب وابستگی‌های JS (یک بار قبل از کلاس)
+### 📦 مرحله ۲: نصب وابستگی‌ها (یک بار)
 
-تست Anchor با mocha اجرا می‌شود. برای جلوگیری از دانلود/نصب در کلاس:
+> [!TIP]
+> این مرحله **قبل از کلاس** انجام شود!
 
 ```bash
 yarn install
@@ -140,106 +150,207 @@ yarn install
 
 ---
 
-## 4) 🏗️ Build و Deploy (نمایشی)
-
-### Build
+### 🏗️ مرحله ۳: Build (اختیاری — قبل از کلاس)
 
 ```bash
 anchor build
 ```
 
-- بار اول: ممکن است چند دقیقه طول بکشد.
+**زمان:**
+- بار اول: 3-10 دقیقه
+- بار دوم: 30-90 ثانیه
 
-### Deploy
+> [!CAUTION]
+> در کلاس **build نکنید**! از پروژه کامپایل شده استفاده کنید.
+
+---
+
+### 🚀 مرحله ۴: Deploy (نمایشی — نه در کلاس!)
 
 ```bash
 anchor deploy
 ```
 
-**قید اجرایی**
+**خروجی:**
 
-- اگر برنامه از قبل deploy شده باشد، در کلاس نیازی به `anchor deploy` نیست.
-- در کلاس معمولاً فقط Explorer نمایش داده می‌شود.
+```
+Program Id: GoyGGBpwUQYxoicpFRiNQ8k8qKk1myVRDkiiLvXaT1jg
+```
 
-- بعد از deploy می‌توان لینک Explorer را نشان داد:
+> [!NOTE]
+> 💡 در کلاس، program از قبل deploy شده است. فقط Explorer نمایش می‌دهیم.
 
-لینک Explorer برنامه:
+### 🔗 نمایش در Explorer
 
 ```bash
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "📦 Program on Explorer:"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo ""
 echo "https://explorer.solana.com/address/GoyGGBpwUQYxoicpFRiNQ8k8qKk1myVRDkiiLvXaT1jg?cluster=devnet"
+echo ""
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 ```
 
 ---
 
-## 5) 🧪 ساخت Mint و mint کردن Supply با Test (کم‌کدنویسی‌ترین دموی امن)
-
-این پروژه یک تست دارد که mint PDA را می‌سازد و supply را mint می‌کند.
+### 🧪 مرحله ۵: اجرای Test (کم‌ریسک)
 
 ```bash
 anchor test --skip-local-validator
 ```
 
-این تست:
- 
- - PDA را از seed `sat-mint` می‌سازد.
- - اگر mint از قبل وجود داشته باشد، تست به شکل **تکرارپذیر (idempotent)** اجرا می‌شود و mint مجدد انجام نمی‌شود (مناسب کلاس).
- 
- **خروجی مورد انتظار**
+**این تست چه کارهایی انجام می‌دهد؟**
 
-- انتظار می‌رود لاگ‌های زیر مشاهده شود:
-  - `SAT Mint PDA:`
-  - `Payer ATA:`
-  - `Transaction signature:` (یا پیام `Skipping ... idempotent`)
+```
+┌─────────────────────────────────────────────────────────┐
+│                 Anchor Test Workflow                    │
+├─────────────────────────────────────────────────────────┤
+│                                                          │
+│  1️⃣  بررسی: آیا mint PDA از قبل وجود دارد؟             │
+│      └─ بله → Skip (idempotent)                        │
+│      └─ خیر → ادامه ⬇️                                  │
+│                                                          │
+│  2️⃣  ساخت mint PDA با seed "sat-mint"                  │
+│                                                          │
+│  3️⃣  mint کردن total supply (369M tokens)              │
+│                                                          │
+│  4️⃣  Revoke کردن mint authority → None 🔒              │
+│                                                          │
+│  5️⃣  Revoke کردن freeze authority → None 🔒            │
+│                                                          │
+│  ✅  نتیجه: توکن immutable و safe                       │
+│                                                          │
+└─────────────────────────────────────────────────────────┘
+```
 
-اگر مشاهده شد که Anchor در حال بالا آوردن local validator است، یعنی `--skip-local-validator` اعمال نشده.
+**خروجی مورد انتظار:**
 
-### خروجی‌های مهم برای نمایش در کلاس
+```
+SAT Token Test
+  ✓ Create and Mint SAT Tokens (2134ms)
 
-- `SAT Mint PDA` و `Payer ATA`
-- `Transaction signature`
-
-Explorer برای Mint:
-
-```bash
-echo "https://explorer.solana.com/address/CJG3HkzGDshcrZ3XkERcM4wA4opZfJC81EuTfmzKSrnv?cluster=devnet"
+1 passing (2s)
 ```
 
 ---
 
-## 6) 🔒 نکته مهم امنیتی/پروژه‌ای: قفل کردن authority
+## 🔒 نکته امنیتی مهم: Authority Revoke
 
-در کد برنامه (`programs/sat/src/lib.rs`) بعد از mint اولیه:
+```rust
+// از programs/sat/src/lib.rs
 
-- Mint authority به `None` ست می‌شود.
-- Freeze authority هم به `None` ست می‌شود.
+// بعد از mint:
+token::set_authority(
+    // ...
+    AuthorityType::MintTokens,
+    None,  // ← دیگر هیچ‌کس نمی‌تواند mint کند!
+)?;
 
-این یعنی:
+token::set_authority(
+    // ...
+    AuthorityType::FreezeAccount,
+    None,  // ← دیگر هیچ‌کس نمی‌تواند freeze کند!
+)?;
+```
 
-- دیگر هیچ‌کس نمی‌تواند supply جدید mint کند.
-- دیگر کسی نمی‌تواند freeze/unfreeze کند.
+### ✅ مزایا
 
-### تجربه واقعی پروژه (یک درس مهم)
- 
-چون mint authority را قفل کردیم، برای SAT v1 دیگر نتوانستیم بعضی کارها را انجام بدهیم (مثل اضافه کردن metadata با روش‌هایی که نیاز به امضای mint authority دارند). پس:
- 
- - در صورت نیاز به metadata یا تغییرات بعدی، یا metadata قبل از revoke تنظیم می‌شود، یا از Token-2022 استفاده می‌شود.
- 
+<div align="center">
+
+| مزیت | توضیح |
+|---|---|
+| 🛡️ **امنیت** | جلوگیری از supply inflation |
+| 🔒 **اعتماد** | ثابت است که supply تغییر نمی‌کند |
+| ⚖️ **عدالت** | کسی نمی‌تواند freeze کند |
+
+</div>
+
+### ⚠️ محدودیت‌ها
+
+> [!WARNING]
+> **تجربه واقعی پروژه:**  
+> چون mint authority revoke شد، برخی کارهای بعدی (مثل افزودن metadata با روش‌های خاص) سخت/غیرممکن شد!
+
+**راه‌حل برای پروژه‌های آینده:**
+
+<div align="center">
+
+| سناریو | راه‌حل |
+|---|---|
+| نیاز به metadata بعدی | قبل از revoke تنظیم کنید |
+|نیاز به flexibility | از Token-2022 استفاده کنید |
+| نیاز به مدیریت | authority را به PDA/Multisig منتقل کنید |
+
+</div>
+
 ---
 
-## 7) ⏱️ نکته اجرایی: مدیریت زمان
+## 🏛️ معماری: چرا PDA؟
 
-برای اینکه `anchor build/test` در کلاس طولانی نشود:
- 
-- قبل از کلاس یک بار `anchor build` اجرا می‌شود.
- - در کلاس فقط `anchor test` (یا صرفاً نمایش Explorer + توضیح معماری) کافی است.
+```
+┌──────────────────────────────────────────────────────────┐
+│                    PDA (Program Derived Address)         │
+├──────────────────────────────────────────────────────────┤
+│                                                           │
+│  بدون PDA:                       با PDA:                 │
+│                                                           │
+│  Mint = Random Address           Mint = Deterministic    │
+│  └─❌ غیرقابل پیش‌بینی           └─✅ قابل پیش‌بینی       │
+│  └─❌ نیاز به ذخیره              └─✅ محاسبه‌پذیر         │
+│  └─❌ امنیت کمتر                 └─✅ امنیت بیشتر         │
+│                                                           │
+│  فرمول PDA:                                              │
+│  ┌────────────────────────────────────────────┐          │
+│  │ PDA = f(seeds, program_id, bump)           │          │
+│  └────────────────────────────────────────────┘          │
+│                                                           │
+│  مثال پروژه SAT:                                         │
+│  seed = "sat-mint"                                       │
+│  program_id = GoyGGBp...                                 │
+│  bump = (محاسبه خودکار)                                 │
+│  ↓                                                        │
+│  PDA = CJG3Hkz...                                        │
+│                                                           │
+└──────────────────────────────────────────────────────────┘
+```
 
 ---
 
-## 8) 🧯 خطاهای رایج و راه‌حل سریع
+## ⏱️ مدیریت زمان در کلاس
 
-- **مشکل: تست روی localnet اجرا می‌شود**
-  - **علائم:** شروع شدن local validator / آدرس‌های جدید / موجود نبودن داده‌های Devnet
-  - **راه‌حل:** متغیرهای محیطی ست می‌شود و دوباره اجرا می‌شود:
+> [!TIP]
+> **استراتژی No-Build:**
+
+```
+┌──────────────────────────────────────────┐
+│  قبل از کلاس:                            │
+│  ✅ anchor build (یک بار)               │
+│  ✅ anchor deploy (یک بار)              │
+│  ✅ yarn install (یک بار)               │
+│                                           │
+│  در کلاس:                                │
+│  ✅ anchor test (30-60 ثانیه)           │
+│  یا                                       │
+│  ✅ فقط Explorer links (0 ثانیه) ⚡     │
+│                                           │
+│  ❌ anchor build (ممنوع!)                │
+│  ❌ anchor deploy (ممنوع!)               │
+└──────────────────────────────────────────┘
+```
+
+---
+
+## 🧯 خطاهای رایج و راه‌حل
+
+### ❌ خطا: تست روی localnet اجرا می‌شود
+
+**علائم:**
+- شروع local validator
+- آدرس‌های جدید
+- موجود نبودن داده‌های Devnet
+
+**راه‌حل:**
 
 ```bash
 export ANCHOR_PROVIDER_URL="https://api.devnet.solana.com"
@@ -247,15 +358,76 @@ export ANCHOR_WALLET="$HOME/.config/solana/devnet.json"
 anchor test --skip-local-validator
 ```
 
-- **مشکل: کمبود SOL**
-  - **راه‌حل:**
+### ❌ خطا: کمبود SOL
+
+**راه‌حل:**
 
 ```bash
 solana airdrop 2
 solana balance
 ```
 
-**خروجی مورد انتظار**
+---
 
-- `solana airdrop 2` باید یک signature چاپ کند.
-- `solana balance` باید افزایش پیدا کند.
+## 📊 خلاصه مقایسه دو روش
+
+<div align="center">
+
+| معیار | Token-2022 CLI | Anchor SAT |
+|---|:---:|:---:|
+| ⏱️ **زمان** | ~2 دقیقه | ~1 ساعت (اولین بار) |
+| 💻 **کدنویسی** | ❌ | ✅ Rust |
+| 🎯 **کنترل** | محدود | کامل |
+| 🔒 **امنیت** | استاندارد | سفارشی |
+| 📈 **مقیاس‌پذیری** | کم | بالا |
+| 🎓 **یادگیری** | آسان | سخت |
+| 🏢 **Production** | MVP | ✅ پیشنهاد |
+
+</div>
+
+---
+
+## ✅ خلاصه آموخته‌ها
+
+```
+┌──────────────────────────────────────────────────────────┐
+│               دستاوردهای این بخش                         │
+├──────────────────────────────────────────────────────────┤
+│                                                           │
+│  1️⃣  PDA = آدرس قطعی + امن                              │
+│                                                           │
+│  2️⃣  Anchor = کد کمتر + امنیت بیشتر                     │
+│                                                           │
+│  3️⃣  Authority Revoke = supply ثابت                      │
+│                                                           │
+│  4️⃣  Idempotent Test = قابل تکرار                        │
+│                                                           │
+│  5️⃣  Production-Ready = آماده استفاده واقعی             │
+│                                                           │
+└──────────────────────────────────────────────────────────┘
+```
+
+---
+
+<div align="center">
+
+### 🎓 نکته کلیدی
+
+> **برای یادگیری:** Token-2022 CLI ⚡  
+> **برای پروژه واقعی:** Anchor Program 💎
+
+---
+
+**📚 مرحله بعد:**
+
+[💰 قیمت‌گذاری با Raydium →](03-raydium-cpmm.md)
+
+---
+
+**[← Token-2022 CLI](01-token-2022-cli.md)** | **[فهرست مستندات](index.md)** | **[Raydium CPMM →](03-raydium-cpmm.md)**
+
+---
+
+**Built with ❤️ by [Amin Davodian](https://senioramin.com)**
+
+</div>

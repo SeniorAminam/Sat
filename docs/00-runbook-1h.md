@@ -11,86 +11,104 @@ Purpose: Time-boxed 1-hour runbook for a class session with commands and a pre-c
 Developed by Amin Davodian
 -->
 
-# 🗓️ Runbook ارائه ۱ ساعته (کلاسی)
+<div align="center">
 
-هدف: در ۶۰ دقیقه، من **دو روش** ساخت توکن روی Solana Devnet را به صورت عملی اجرا می‌کنم:
+# 🗓️ Runbook ارائه ۱ ساعته
 
-- روش سریع و کم‌ریسک ⚡: **Token-2022 با CLI**
-- روش پروژه واقعی 🧱: **Anchor Program + نکات واقعی پروژه + Raydium CPMM (اختیاری/نمایشی)**
+### ⏱️ زمان‌بندی حرفه‌ای برای کارگاه عملی
 
-> نکته: روی Windows، اجرای Solana/Anchor **داخل WSL** انجام می‌شود.
+<img src="https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png" width="80" alt="Solana"/>
 
 ---
 
-## 0) ✅ چک‌لیست قبل از کلاس (پیش‌نیازهای اجرایی)
+**ارائه‌دهنده:** [امین داوودیان](https://senioramin.com) | [@SeniorAminam](https://github.com/SeniorAminam)
 
-این موارد برای کاهش ریسک خطا در کلاس است.
+</div>
 
-### 0.1) اینترنت + Explorer
+---
 
-- Explorer Devnet باز باشد:
-  - https://explorer.solana.com/?cluster=devnet
+## 🎯 هدف جلسه
 
-### 0.2) WSL و ابزارها
+در ۶۰ دقیقه، **دو روش** ساخت توکن روی Solana Devnet اجرا می‌شود:
 
-داخل WSL اجرا می‌کنیم:
+<div align="center">
 
-```bash
-solana --version
-anchor --version
-rustc --version
-node --version
-yarn --version
-spl-token --version
+| روش | نوع | زمان | ریسک |
+|:---:|---|:---:|:---:|
+| ⚡ **Token-2022 CLI** | سریع و کم‌ریسک | ~15 دقیقه | 🟢 کم |
+| 🧱 **Anchor Program** | حرفه‌ای و واقعی | ~20 دقیقه | 🟡 متوسط |
+| 💰 **Raydium CPMM** | اختیاری/نمایشی | ~10 دقیقه | 🟢 کم |
+
+</div>
+
+> [!IMPORTANT]
+> ⚠️ روی Windows، تمام دستورات **داخل WSL** اجرا می‌شوند!
+
+---
+
+## ⏱️ Timeline
+
+```
+┌──────────────────────────────────────────────────────────────────┐
+│                      60 MINUTES TIMELINE                          │
+├────────────────────────────────────────────────────────────────────┤
+│                                                                    │
+│  0min           5            30           50          60          │
+│    │            │             │            │           │          │
+│    ▼            ▼             ▼            ▼           ▼          │
+│  ┌────┐    ┌──────────┐  ┌──────────┐  ┌────────┐  ┌──────┐      │
+│  │مقدمه│    │Token-2022│  │  Anchor  │  │Raydium │  │پایان │      │
+│  │ 5m │    │   25m    │  │   20m    │  │  10m   │  │ 0m   │      │
+│  └────┘    └──────────┘  └──────────┘  └────────┘  └──────┘      │
+│                                                                    │
+└──────────────────────────────────────────────────────────────────┘
 ```
 
-### 0.2.1) نصب سریع (از صفر) — فقط اگر هنوز نصب نیست
+---
 
-اگر قرار است «از صفر» محیط را بسازیم، این دستور نصب رسمی Solana (به‌همراه Rust/Anchor/Node/Yarn) داخل WSL استفاده می‌شود:
+## ✅ چک‌لیست قبل از کلاس
+
+### 🌐 اینترنت + Explorer
+
+- [ ] Explorer Devnet باز باشد: [explorer.solana.com](https://explorer.solana.com/?cluster=devnet)
+- [ ] اتصال اینترنت پایدار
+
+### 🛠️ WSL و ابزارها
 
 ```bash
+# چک نسخه‌ها (داخل WSL)
+solana --version    # >= 2.x
+anchor --version    # >= 0.32
+rustc --version     # >= 1.89
+node --version      # >= 20
+yarn --version      # >= 1.22
+spl-token --version # >= 4.x
+```
+
+### 📦 نصب سریع (اگر نیاز بود)
+
+```bash
+# نصب رسمی Solana
 curl --proto '=https' --tlsv1.2 -sSfL https://solana-install.solana.workers.dev | bash
-```
 
-بعد از نصب:
-
-```bash
+# چک نهایی
 rustc --version && solana --version && anchor --version && node --version && yarn --version
 ```
 
-#### 0.2.2) Preflight (Copy/Paste) — چک سریع و کم‌ریسک
-
-این بلاک کامل اجرا می‌شود. اگر همه چیز درست باشد، خروجی error دیده نمی‌شود و از روی خروجی‌ها وضعیت آماده‌بودن مشخص است.
+### 💰 Wallet + Devnet SOL
 
 ```bash
-solana config get
-solana address
-solana balance
-test -f ~/.config/solana/devnet.json && echo "OK: devnet keypair exists" || echo "MISSING: ~/.config/solana/devnet.json"
-spl-token --version
-```
-
-**خروجی مورد انتظار**
-
-- `solana config get` باید `RPC URL: ...devnet...` نشان بدهد.
-- `solana address` باید pubkey ولت را نشان بدهد.
-- `solana balance` باید حداقل چند دهم SOL باشد (برای دمو بهتر: `>= 1 SOL`).
-
-- اگر `anchor` یا `solana` موجود نبود: نصب و آماده‌سازی باید قبل از کلاس تکمیل شود.
-
-### 0.3) Wallet + Devnet SOL
-
-داخل WSL:
-
-```bash
+# تنظیم Devnet
 solana config set --url devnet
 solana config set --keypair ~/.config/solana/devnet.json
+
+# چک و airdrop
 solana address
 solana airdrop 2
-solana balance
+solana balance  # باید >= 2 SOL باشد
 ```
 
-- اگر `~/.config/solana/devnet.json` وجود نداشت:
+**اگر keypair موجود نبود:**
 
 ```bash
 solana-keygen new --outfile ~/.config/solana/devnet.json
@@ -98,123 +116,188 @@ solana config set --keypair ~/.config/solana/devnet.json
 solana airdrop 2
 ```
 
-### 0.4) Warm-up برای کامپایل (صرفه‌جویی در زمان کلاس)
+### 🔥 Warm-up (قبل از کلاس!)
 
-این مرحله برای کاهش زمان اجرای کلاس است.
-
-- Anchor (اولین بار ممکن است چند دقیقه طول بکشد):
+> [!CAUTION]
+> **قانون طلایی:** نصب/دانلود وسط کلاس ممنوع!
 
 ```bash
+# SAT project
 cd /mnt/d/Amin/Projects/Programming/Telegram/Bots/Tests/Solana/Token/sat
-anchor build
-```
+anchor build    # بار اول: 3-10 دقیقه
+yarn install
 
-#### 0.4.1) قانون طلایی: نصب/دانلود حین کلاس ممنوع
-
-اگر `anchor build` یا `yarn install` بار اول باشد، ممکن است وسطش دانلود انجام شود.
-
-- یک بار `anchor build` باید تا انتها اجرا شده باشد.
-- یک بار `yarn install` باید تا انتها اجرا شده باشد.
-
-در زمان کلاس فقط اجراهای سریع و تکرارپذیر انجام می‌شود.
-
-- Raydium scripts:
-
-```bash
+# Raydium scripts
 cd /mnt/d/Amin/Projects/Programming/Telegram/Bots/Tests/Solana/Token/raydium-sdk-V2-demo
 yarn install
 ```
 
-> زمان‌های واقعی (تقریبی):
-> - `anchor build` بار اول: 3 تا 12 دقیقه (بسته به CPU/کش)
-> - `anchor build` بار دوم: 30 تا 90 ثانیه
-> - `yarn install` بار اول: 1 تا 5 دقیقه
+---
 
-### 0.5) 🛣️ میان‌بُر روز ارائه: دور زدن کامپایل (کاملاً شدنی)
+## 🎯 استراتژی No-Compile
 
-اگر نمی‌خواهیم درگیر کامپایل Rust/Anchor شویم (یا ریسک زمان را نزدیک صفر کنیم)، سناریو این است:
+> [!TIP]
+> 📖 برای جلوگیری از درگیری با کامپایل: [راهنمای کامل No-Compile](07-no-compile-class-guide.md)
 
-- برای «توکن جدید واقعی + mint + metadata» از مسیر **Token-2022 CLI** استفاده می‌کنیم (بدون Rust).
-- برای بخش Anchor، فقط از پروژه‌ی آماده‌ی `sat/` برای **توضیح معماری + اجرای امن/نمایش Explorer** استفاده می‌کنیم.
-
-مسیر اجرایی:
-
-- ساخت توکن جدید + metadata:
-  - `docs/01-token-2022-cli.md`
-- پروژه واقعی (Anchor) بدون ریسک کامپایل وسط کلاس:
-  - `docs/02-anchor-sat.md`
+| مرحله | ابزار | کلاس؟ |
+|---|---|:---:|
+| ساخت توکن جدید | Token-2022 CLI | ✅ |
+| نمایش معماری | SAT (کامپایل شده) | ✅ |
+| Quote گرفتن | Raydium | ✅ |
+| Build/Deploy | Anchor | ❌ |
 
 ---
 
-## 1) ⏱️ سناریو و زمان‌بندی پیشنهادی (60 دقیقه)
+## 📋 سناریو اجرا (۶۰ دقیقه)
 
-### دقیقه 0-5: مقدمه سریع
+### ⏰ دقیقه 0-5: مقدمه سریع
 
-- سولانا چیست؟ (Account model)
-- SPL Token چیست؟
-- تفاوت `Token Program` و `Token-2022`
-
-### دقیقه 5-30: روش ۱ (Token-2022 با CLI)
-
-- اجرای کامل طبق: `docs/01-token-2022-cli.md`
-
-هدف: ساخت mint + ایجاد token account + mint supply + نمایش در Explorer + (در صورت داشتن CID) metadata.
-
-**قید اجرایی**
-
-- اگر metadata (CID) آماده نیست، مرحله IPFS در کلاس حذف می‌شود.
-- اجرای mint/account/mint-supply و نمایش Explorer کافی است.
-
-### دقیقه 30-50: روش ۲ (Anchor program واقعی)
-
-- اجرای بخش‌های کلیدی طبق: `docs/02-anchor-sat.md`
-
-هدف: نشان می‌دهد که می‌توان mint را با برنامه ساخت (PDA)، supply را mint کرد و authority را قفل کرد.
-
-**قید اجرایی**
-
-- `anchor deploy` در کلاس انجام نمی‌شود (ریسک شبکه/کمبود SOL/کندی). برنامه از قبل deploy شده.
-- در کلاس فقط `anchor test --skip-local-validator` اجرا می‌شود (در داک آمده).
-
-### دقیقه 50-60: Raydium CPMM (اختیاری + کم‌ریسک)
-
-- فقط **Quote** گرفته می‌شود (بدون ارسال تراکنش) تا ریسک نزدیک صفر شود:
-  - طبق `docs/03-raydium-cpmm.md`
-
-**قید اجرایی**
-
-- `MODE=swap` اجرا نمی‌شود.
-- ساخت pool جدید انجام نمی‌شود.
-
----
-
-## 2) 📌 قواعد اجرای کلاس
-
-- اجرا داخل WSL انجام می‌شود.
-- قبل از هر دموی سنگین، `solana balance` چک می‌شود.
-- از ساخت Pool جدید خودداری می‌شود؛ فقط **Quote** گرفته می‌شود.
-- بعد از هر دستور مهم، خروجی تاییدی چک می‌شود (در داک‌ها نوشته شده).
-
----
-
-## 3) 🛟 Plan B (اگر Devnet/RPC اذیت کرد)
-
-اگر Devnet شلوغ بود یا airdrop انجام نشد یا یک تراکنش طول کشید:
-
-- کلاس متوقف نمی‌شود؛ سریع به “نمایش Explorer + توضیح معماری” منتقل می‌شویم.
-- لینک‌های آماده Devnet (از پروژه واقعی):
-
-```bash
-echo "Program: https://explorer.solana.com/address/GoyGGBpwUQYxoicpFRiNQ8k8qKk1myVRDkiiLvXaT1jg?cluster=devnet"
-echo "SAT Mint: https://explorer.solana.com/address/CJG3HkzGDshcrZ3XkERcM4wA4opZfJC81EuTfmzKSrnv?cluster=devnet"
-echo "Raydium Pool: https://explorer.solana.com/address/4dhEUxwSA2BrEmYHQU5Kn7YZD73c9R9W8iM8HLYqqZqf?cluster=devnet"
-echo "Create Pool Tx: https://explorer.solana.com/tx/2UL7qT9nH8Ch9G2WQCFMH86KvpjJyzAF6Amfj5bF4oBLv1RBUBbETnGrXzq3fCQiKtfUh6UtyB8LGTEY1zGBFJF7?cluster=devnet"
+```
+┌────────────────────────────────────────┐
+│  📚 مقدمه (5 دقیقه)                   │
+├────────────────────────────────────────┤
+│  • سولانا چیست؟ (Account model)       │
+│  • SPL Token چیست؟                    │
+│  • تفاوت Token Program و Token-2022   │
+└────────────────────────────────────────┘
 ```
 
 ---
 
-## 4) ✅ پایان (جمع‌بندی ۳۰ ثانیه‌ای)
+### ⏰ دقیقه 5-30: Token-2022 CLI
 
-- روش Token-2022: سریع، ساده، مناسب MVP و Demo.
-- روش Anchor: قابل اعتمادتر برای پروژه واقعی (قانون‌گذاری/کنترل)، ولی زمان کامپایل و پیچیدگی بیشتری دارد.
-- Raydium: ورود توکن به DeFi؛ در کلاس فقط **Quote** گرفته می‌شود.
+**راهنما:** [01-token-2022-cli.md](01-token-2022-cli.md)
+
+<div align="center">
+
+| خروجی | زمان |
+|---|:---:|
+| 🪙 ساخت Mint | ~30s |
+| 🏦 ساخت Account | ~15s |
+| 💰 Mint Supply | ~15s |
+| 🖼️ Metadata | ~30s |
+| 🔗 Explorer | ~10s |
+
+</div>
+
+> [!NOTE]
+> اگر metadata (CID) آماده نیست، این مرحله skip می‌شود.
+
+---
+
+### ⏰ دقیقه 30-50: Anchor SAT
+
+**راهنما:** [02-anchor-sat.md](02-anchor-sat.md)
+
+```
+┌────────────────────────────────────────┐
+│  🧱 Anchor (20 دقیقه)                 │
+├────────────────────────────────────────┤
+│  • PDA چیست و چرا؟                    │
+│  • Authority Revoke = امنیت           │
+│  • anchor test (idempotent)           │
+│  • نمایش Explorer                     │
+└────────────────────────────────────────┘
+```
+
+> [!CAUTION]
+> ❌ `anchor deploy` در کلاس انجام **نمی‌شود**!  
+> ✅ فقط `anchor test --skip-local-validator`
+
+---
+
+### ⏰ دقیقه 50-60: Raydium CPMM
+
+**راهنما:** [03-raydium-cpmm.md](03-raydium-cpmm.md)
+
+```
+┌────────────────────────────────────────┐
+│  💰 Raydium (10 دقیقه)                │
+├────────────────────────────────────────┤
+│  • فقط Quote (بدون tx)                │
+│  • نمایش Pool در Explorer             │
+│  • توضیح x × y = k                    │
+└────────────────────────────────────────┘
+```
+
+> [!WARNING]
+> ❌ `MODE=swap` اجرا **نمی‌شود**!  
+> ❌ ساخت Pool جدید **نمی‌شود**!
+
+---
+
+## 📌 قواعد اجرای کلاس
+
+<div align="center">
+
+| قاعده | توضیح |
+|---|---|
+| 🖥️ **WSL** | همه دستورات داخل WSL |
+| 💰 **Balance** | قبل از هر دموی سنگین چک شود |
+| 🚫 **No Pool** | از ساخت Pool جدید خودداری |
+| ✅ **Confirm** | بعد از هر دستور، خروجی چک شود |
+
+</div>
+
+---
+
+## 🛟 Plan B (اگر مشکلی پیش آمد)
+
+**اگر Devnet/RPC اذیت کرد:**
+
+- کلاس متوقف **نمی‌شود**!
+- سریع به "نمایش Explorer + توضیح معماری" منتقل می‌شویم
+
+```bash
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "📦 Program:"
+echo "https://explorer.solana.com/address/GoyGGBpwUQYxoicpFRiNQ8k8qKk1myVRDkiiLvXaT1jg?cluster=devnet"
+echo ""
+echo "🪙 SAT Mint:"
+echo "https://explorer.solana.com/address/CJG3HkzGDshcrZ3XkERcM4wA4opZfJC81EuTfmzKSrnv?cluster=devnet"
+echo ""
+echo "🌊 Raydium Pool:"
+echo "https://explorer.solana.com/address/4dhEUxwSA2BrEmYHQU5Kn7YZD73c9R9W8iM8HLYqqZqf?cluster=devnet"
+echo ""
+echo "📝 Create Pool TX:"
+echo "https://explorer.solana.com/tx/2UL7qT9nH8Ch9G2WQCFMH86KvpjJyzAF6Amfj5bF4oBLv1RBUBbETnGrXzq3fCQiKtfUh6UtyB8LGTEY1zGBFJF7?cluster=devnet"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+```
+
+---
+
+## ✅ پایان (جمع‌بندی ۳۰ ثانیه‌ای)
+
+```
+┌──────────────────────────────────────────────────────────────────┐
+│                         خلاصه جلسه                               │
+├──────────────────────────────────────────────────────────────────┤
+│                                                                   │
+│  ⚡ Token-2022: سریع، ساده، مناسب MVP و Demo                    │
+│                                                                   │
+│  🧱 Anchor: قابل اعتمادتر، مناسب پروژه واقعی                    │
+│     (اما زمان کامپایل و پیچیدگی بیشتر)                          │
+│                                                                   │
+│  💰 Raydium: ورود توکن به DeFi                                   │
+│     (در کلاس فقط Quote گرفتیم)                                   │
+│                                                                   │
+└──────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+<div align="center">
+
+**📚 مستندات تکمیلی:**
+
+[⚡ Token-2022](01-token-2022-cli.md) | [🧱 Anchor](02-anchor-sat.md) | [💰 Raydium](03-raydium-cpmm.md) | [🔧 Troubleshooting](04-troubleshooting.md)
+
+---
+
+**[← فهرست مستندات](index.md)** | **[اسکریپت ارائه →](../PRESENTATION_WALKTHROUGH.md)**
+
+---
+
+**Built with ❤️ by [Amin Davodian](https://senioramin.com)**
+
+</div>

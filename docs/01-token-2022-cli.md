@@ -11,231 +11,443 @@ Purpose: Step-by-step, low-risk Token-2022 workflow using Solana CLI + spl-token
 Developed by Amin Davodian
 -->
 
-# ⚡ روش ۱: ساخت توکن با Token-2022 (سریع و ساده)
+<div align="center">
 
-در این بخش از ارائه، من از Token-2022 به عنوان مسیر سریع استفاده می‌کنم؛ علت انتخاب:
+# ⚡ روش ۱: ساخت توکن با Token-2022
 
-- عدم نیاز به کدنویسی Rust/Anchor
-- اجرای قابل تکرار با CLI
-- امکان اتصال metadata روی خود توکن (Token-2022 extensions)
+### 🚀 سریع، ساده، بدون کدنویسی
 
-> در این جلسه، همه دستورات داخل WSL اجرا می‌شود.
-
-**ارائه‌دهنده:** Amin Davodian (SeniorAmin)
-
-- Website: https://senioramin.com
-- GitHub: https://github.com/SeniorAminam
+<img src="https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png" width="100" alt="Solana"/>
 
 ---
 
-## 🎯 خروجی مورد انتظار این بخش
+**ارائه‌دهنده:** [امین داوودیان](https://senioramin.com) | [@SeniorAminam](https://github.com/SeniorAminam)
 
-- ساخت یک `mint` روی Devnet
-- ساخت ATA برای ولت
-- mint کردن supply اولیه
-- گرفتن لینک Explorer و نمایش نتیجه
+</div>
 
 ---
 
-## 1) 🔧 تنظیم Devnet و Wallet
+## 🎯 هدف این بخش
 
-### 1.1) Preflight (Copy/Paste)
+در این بخش از ارائه، یک توکن کامل با ویژگی‌های زیر می‌سازیم:
 
-ابتدا این دستورات اجرا می‌شود تا Devnet و کیف پول فعال بررسی شود:
+<div align="center">
+
+| ویژگی | توضیح | زمان |
+|:---:|---|:---:|
+| 🪙 **Mint Address** | آدرس یکتای توکن روی Devnet | ~30 ثانیه |
+| 🏦 **Token Account** | حساب نگهداری توکن | ~15 ثانیه |
+| 💰 **Supply** | تعداد اولیه توکن‌ها | ~15 ثانیه |
+| 🖼️ **Metadata** | نام، نماد و لوگو | ~30 ثانیه |
+| 🔗 **Explorer** | مشاهده در Solana Explorer | - |
+
+**⏱️ زمان کل: حدود 2 دقیقه**
+
+</div>
+
+---
+
+## 💡 چرا Token-2022؟
+
+```
+┌──────────────────────────────────────────────────────────┐
+│         Token Program vs Token-2022                      │
+├────────────────────┬─────────────────────────────────────┤
+│                    │                                     │
+│  Token Program     │         Token-2022                  │
+│   (قدیمی)          │          (جدید)                     │
+│                    │                                     │
+│  ┌──────────┐      │    ┌──────────────────────┐        │
+│  │  Core    │      │    │  Core + Extensions   │        │
+│  └──────────┘      │    └──────────────────────┘        │
+│                    │                                     │
+│  ✅ Transfer       │    ✅ Transfer                      │
+│  ✅ Mint           │    ✅ Mint                          │
+│  ✅ Burn           │    ✅ Burn                          │
+│  ❌ Metadata       │    ✅ Metadata on-chain ⭐          │
+│  ❌ Transfer Fee   │    ✅ Transfer Fee                  │
+│  ❌ Interest       │    ✅ Interest Bearing              │
+│                    │                                     │
+└────────────────────┴─────────────────────────────────────┘
+```
+
+> [!TIP]
+> 💡 برای پروژه‌های جدید، **Token-2022** انتخاب بهتری است!
+
+---
+
+## 🛠️ پیش‌نیازها
+
+### ✅ چک‌لیست قبل از شروع
+
+<div align="center">
+
+| # | مورد | دستور چک | وضعیت |
+|:---:|---|---|:---:|
+| 1️⃣ | **WSL فعال** | `wsl --version` | ⬜ |
+| 2️⃣ | **Solana CLI** | `solana --version` | ⬜ |
+| 3️⃣ | **SPL Token** | `spl-token --version` | ⬜ |
+| 4️⃣ | **Devnet Config** | `solana config get` | ⬜ |
+| 5️⃣ | **SOL Balance** | `solana balance` (>= 0.5 SOL) | ⬜ |
+
+</div>
+
+---
+
+## 📋 مراحل اجرا
+
+### 🔧 مرحله ۱: تنظیم محیط
+
+> [!IMPORTANT]
+> ⚠️ تمام دستورات باید **داخل WSL** اجرا شوند!
 
 ```bash
+# ورود به WSL (در PowerShell ویندوز)
+wsl
+
+# تنظیم Devnet
 solana config set --url devnet
 solana config set --keypair ~/.config/solana/devnet.json
+
+# بررسی تنظیمات
 solana config get
-solana address
-test -f ~/.config/solana/devnet.json && echo "OK: keypair exists" || echo "MISSING: ~/.config/solana/devnet.json"
 ```
 
-**خروجی مورد انتظار**
+**خروجی مورد انتظار:**
 
-- `solana config get` باید `RPC URL` مربوط به Devnet را نمایش دهد.
-- `solana address` یک pubkey چاپ می‌کند.
-- پیام `OK: keypair exists` باید مشاهده شود.
-
-```bash
-solana address
+```
+Config File: /home/user/.config/solana/cli/config.yml
+RPC URL: https://api.devnet.solana.com  ← باید devnet باشد
+WebSocket URL: wss://api.devnet.solana.com/
+Keypair Path: /home/user/.config/solana/devnet.json
+Commitment: confirmed
 ```
 
-### 💧 گرفتن SOL تستی
+---
+
+### 💧 دریافت SOL تستی
 
 ```bash
+# مشاهده آدرس کیف پول
+solana address
+
+# درخواست airdrop
 solana airdrop 2
+
+# بررسی موجودی
 solana balance
 ```
 
-**خروجی مورد انتظار**
+**نکات مهم:**
 
-- `solana airdrop 2` باید یک signature چاپ کند.
-- `solana balance` باید بیشتر از 0 باشد.
+> [!NOTE]
+> 🌐 SOL روی Devnet کاملاً **رایگان** است!
 
-**اگر airdrop خطا داد**
-
-- چند دقیقه صبر می‌کنیم و دوباره امتحان می‌شود.
-- یا از RPC دیگری استفاده می‌شود.
-- برای اینکه روند کلاس متوقف نشود: می‌توان Token-2022 را از قبل ساخته و در کلاس فقط `spl-token balance` و Explorer را نمایش داد.
+> [!WARNING]
+> ⚠️ اگر airdrop failed شد، چند دقیقه صبر کنید و دوباره امتحان کنید.
 
 ---
 
-## 2) 🪙 ساخت Mint با Token-2022
+### 🪙 مرحله ۲: ساخت Mint
 
-Token-2022 Program Id:
-
-- `TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb`
-
-دستور ساخت mint:
+این مهم‌ترین مرحله است — ساخت آدرس اصلی توکن!
 
 ```bash
+# ساخت توکن با Token-2022
 spl-token create-token \
   --program-id TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb \
   --enable-metadata \
   --decimals 9
 ```
 
-- خروجی این دستور یک `Address:` می‌دهد. آدرس mint در متغیر `MINT` قرار داده می‌شود (برای جلوگیری از اشتباه در copy/paste):
+**پارامترها:**
 
-```bash
-export MINT="<PASTE_MINT_ADDRESS_HERE>"
-echo "MINT=$MINT"
+<div align="center">
+
+| پارامتر | مقدار | توضیح |
+|---|---|---|
+| `--program-id` | `TokenzQd...xuEb` | آدرس Token-2022 Program |
+| `--enable-metadata` | - | فعال‌سازی metadata |
+| `--decimals` | `9` | تعداد اعشار (استاندارد Solana) |
+
+</div>
+
+**خروجی:**
+
+```
+Creating token 7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU
+
+Signature: 4Z2eN...h8Kp
 ```
 
-**خروجی مورد انتظار**
-
-- باید `MINT=...` مشاهده شود.
-
-### 🔎 تایید در Explorer
+**ذخیره آدرس:**
 
 ```bash
-echo "https://explorer.solana.com/address/$MINT?cluster=devnet"
+# کپی آدرس mint و قرار دادن در متغیر
+export MINT="7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU"
+
+# تایید
+echo "✅ Mint Address: $MINT"
 ```
+
+> [!TIP]
+> 📋 این آدرس را کپی کنید! در مراحل بعدی نیاز داریم.
 
 ---
 
-## 3) 👛 ساخت Token Account (ATA) برای کیف پول
+### 🏦 مرحله ۳: ساخت Token Account
+
+برای نگهداری توکن‌ها نیاز به یک **Token Account** داریم:
 
 ```bash
 spl-token create-account $MINT
 ```
 
-**خروجی مورد انتظار**
+**خروجی:**
 
-- معمولاً یک `Creating account ...` و سپس یک `Address:` یا `Account:` چاپ می‌شود (همان ATA).
+```
+Creating account 9yZB4bPq...
 
-### چک بالانس
+Signature: 2Ks9V...mPx4
+```
+
+**بررسی بالانس:**
 
 ```bash
 spl-token balance $MINT
 ```
 
+**خروجی:**
+
+```
+0
+```
+
+> [!NOTE]
+> 💡 هنوز توکنی mint نکرده‌ایم، بنابراین بالانس صفر است.
+
 ---
 
-## 4) 🏭 Mint کردن Supply اولیه
+### 💸 مرحله ۴: Mint کردن Supply
 
-مثلا 1,000,000 واحد (UI):
+حالا توکن‌های اولیه را می‌سازیم:
 
 ```bash
+# mint کردن 1,000,000 توکن
 spl-token mint $MINT 1000000
+
+# بررسی بالانس
 spl-token balance $MINT
 ```
 
-**خروجی مورد انتظار**
+**خروجی:**
 
-- بعد از mint، `spl-token balance` باید `1000000` (یا عدد متناظر) را نمایش دهد.
+```
+Minting 1000000 tokens
+  Token: 7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU
+  Recipient: 9yZB4bPq...
+
+Signature: 3Hp2...Kx9w
 
 ---
 
-## 5) 🖼️ اضافه کردن Metadata (اختیاری؛ برای نمایش در Explorer)
+1000000
+```
 
-برای اینکه `name/symbol/logo/description` نمایش داده شود، باید یک فایل `metadata.json` جایی host شود (ترجیحا IPFS).
+> [!SUCCESS]
+> 🎉 تبریک! شما الان **1,000,000 توکن** دارید!
 
-### ساخت فایل‌های metadata (لوکال)
+---
 
-یک پوشه محلی ساخته می‌شود:
+### 🖼️ مرحله ۵: اضافه کردن Metadata
+
+Metadata شامل نام، نماد و لوگوی توکن است.
+
+#### گزینه ۱: استفاده از URL آماده (پیشنهادی برای کلاس)
+
+```bash
+spl-token initialize-metadata \
+  $MINT \
+  "Class Demo Token" \
+  "DEMO" \
+  "https://raw.githubusercontent.com/SeniorAminam/Sat/main/metadata/demo.json"
+```
+
+#### گزینه ۲: ساخت فایل Metadata سفارشی
+
+**۱. ساخت فایل JSON:**
 
 ```bash
 mkdir -p metadata
-```
-
-- یک تصویر `logo.png` داخل `metadata/` قرار می‌گیرد.
-- سپس فایل `metadata/metadata.json` ساخته می‌شود (نمونه):
-
-```json
+cat > metadata/metadata.json << 'EOF'
 {
-  "name": "MyToken Token",
-  "symbol": "MTK",
-  "description": "Example token created in class on Solana Devnet.",
-  "image": "logo.png",
+  "name": "My Awesome Token",
+  "symbol": "MAT",
+  "description": "توکن آموزشی ساخته شده در کارگاه دانشگاه",
+  "image": "https://example.com/logo.png",
   "external_url": "https://senioramin.com",
-  "properties": {
-    "files": [{ "uri": "logo.png", "type": "image/png" }],
-    "category": "image"
-  }
+  "attributes": [
+    {
+      "trait_type": "Created By",
+      "value": "Amin Davodian"
+    },
+    {
+      "trait_type": "Workshop",
+      "value": "University Token Workshop 2025"
+    }
+  ]
 }
+EOF
 ```
 
-### آپلود به IPFS
+**۲. آپلود به IPFS یا GitHub**
 
-- برای کاهش ریسک، این بخش از قبل آماده می‌شود و در کلاس فقط URL استفاده می‌شود.
-
-پس از دریافت CID، URL نهایی مثلا:
-
-- `https://gateway.pinata.cloud/ipfs/<CID>/metadata.json`
-
-### گزینه جایگزین کم‌ریسک (برای کلاس): GitHub Raw URL (بدون IPFS)
-
-اگر ریپو public باشد، می‌توان فایل metadata را داخل ریپو commit کرد و URI را از GitHub به صورت raw استفاده کرد.
-
-مثال:
-
-- `https://raw.githubusercontent.com/SeniorAminam/Sat/main/sat/metadata/sat.json`
-
-### اتصال Metadata به Mint
-
-#### گزینه ۱ (پیشنهادی برای کلاس): GitHub Raw URL
+**۳. اتصال Metadata:**
 
 ```bash
 spl-token initialize-metadata \
   $MINT \
-  "MyToken Token" \
-  "MTK" \
-  "https://raw.githubusercontent.com/SeniorAminam/Sat/main/sat/metadata/sat.json"
+  "My Awesome Token" \
+  "MAT" \
+  "https://your-url.com/metadata.json"
 ```
 
-#### گزینه ۲: IPFS Gateway URL
-
-```bash
-spl-token initialize-metadata \
-  $MINT \
-  "MyToken Token" \
-  "MTK" \
-  "https://gateway.pinata.cloud/ipfs/<CID>/metadata.json"
-```
-
-**نکته اجرایی (کاهش ریسک)**
-
-- اگر `CID` از قبل آماده نیست، این مرحله در کلاس انجام نمی‌شود.
-- به جای آن mint/supply و Explorer نمایش داده می‌شود.
+> [!IMPORTANT]
+> 🔗 URL باید در دسترس عموم باشد (IPFS، Arweave، یا GitHub Raw)
 
 ---
 
-## 6) 🔁 انتقال توکن (دموی ساده)
+### 🔍 مرحله ۶: مشاهده در Explorer
 
 ```bash
+# نمایش لینک Explorer
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "🔗 مشاهده توکن در Solana Explorer:"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo ""
+echo "https://explorer.solana.com/address/$MINT?cluster=devnet"
+echo ""
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+```
+
+<div align="center">
+
+[![View on Explorer](https://img.shields.io/badge/🔍_View_on_Solana_Explorer-14F195?style=for-the-badge&logo=solana&logoColor=white)](https://explorer.solana.com/?cluster=devnet)
+
+</div>
+
+---
+
+## 🎁 مرحله اضافی: انتقال توکن
+
+می‌توانید توکن را به آدرس دیگری منتقل کنید:
+
+```bash
+# آدرس مقصد را تنظیم کنید
 export RECIPIENT="<RECIPIENT_WALLET_ADDRESS>"
+
+# انتقال 100 توکن
 spl-token transfer $MINT 100 $RECIPIENT
+
+# یا انتقال به همراه ساخت account (اگر وجود ندارد)
+spl-token transfer $MINT 100 $RECIPIENT --fund-recipient
 ```
-
-**خروجی مورد انتظار**
-
-- باید یک signature چاپ شود.
 
 ---
 
-## ✅ جمع‌بندی
+## ✅ خلاصه مراحل
 
-- کاربرد رایج این مسیر: MVP و Demo
-- برای منطق پیچیده‌تر (قفل/vesting/permission/...) یک Program (Anchor) لازم است.
+```
+┌─────────────────────────────────────────────────────────┐
+│           مراحل ساخت توکن با Token-2022                  │
+├─────────────────────────────────────────────────────────┤
+│                                                          │
+│  1️⃣  تنظیم Devnet                      ✅              │
+│  2️⃣  دریافت SOL تستی                   ✅              │
+│  3️⃣  ساخت Mint                         ✅              │
+│  4️⃣  ساخت Token Account                ✅              │
+│  5️⃣  Mint کردن Supply                  ✅              │
+│  6️⃣  اضافه کردن Metadata               ✅              │
+│  7️⃣  مشاهده در Explorer                ✅              │
+│                                                          │
+│  ⏱️ زمان کل: ~2 دقیقه                                  │
+│  💰 هزینه: رایگان (Devnet)                             │
+│  📊 سختی: آسان                                         │
+│                                                          │
+└─────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 🎯 کاربردها
+
+<div align="center">
+
+| کاربرد | مناسب؟ | توضیح |
+|---|:---:|---|
+| 🎨 **MVP و Demo** | ✅ | عالی برای نمایش سریع |
+| 🎓 **آموزش** | ✅ | ساده و قابل فهم |
+| 🚀 **پروژه کوچک** | ✅ | برای شروع سریع |
+| 🏢 **پروژه بزرگ** | ⚠️ | بهتر از Anchor استفاده شود |
+| 🔒 **منطق پیچیده** | ❌ | نیاز به قرارداد هوشمند |
+
+</div>
+
+---
+
+## 🆚 مقایسه با Anchor
+
+```
+┌──────────────────┬─────────────────┬──────────────────┐
+│      معیار       │  Token-2022 CLI │  Anchor Program  │
+├──────────────────┼─────────────────┼──────────────────┤
+│ زمان             │   ~2 دقیقه      │   ~1 ساعت        │
+│ پیچیدگی          │   آسان          │   متوسط-سخت     │
+│ کدنویسی          │   ندارد         │   Rust           │
+│ کنترل            │   محدود         │   کامل           │
+│ امنیت            │   استاندارد     │   سفارشی         │
+│ قابلیت توسعه     │   محدود         │   بالا           │
+└──────────────────┴─────────────────┴──────────────────┘
+```
+
+---
+
+## 🎓 نکات آموزشی
+
+> [!TIP]
+> **چه زمانی از Token-2022 CLI استفاده کنیم؟**
+> - پروتوتایپ سریع
+> - یادگیری و آموزش
+> - توکن‌های ساده بدون منطق پیچیده
+> - تست و آزمایش
+
+> [!NOTE]
+> **چه زمانی از Anchor استفاده کنیم؟**
+> - پروژه‌های production
+> - نیاز به منطق سفارشی
+> - کنترل کامل روی authority ها
+> - قوانین پیچیده mint/burn
+
+---
+
+<div align="center">
+
+### ✨ تبریک! 🎉
+
+شما با موفقیت یک توکن کامل روی Solana ساختید!
+
+---
+
+**📚 مرحله بعد:**
+
+[🧱 روش ۲: Anchor Program →](02-anchor-sat.md)
+
+---
+
+**[← بازگشت به فهرست](index.md)** | **[Troubleshooting →](04-troubleshooting.md)**
+
+---
+
+**Built with ❤️ by [Amin Davodian](https://senioramin.com)**
+
+</div>
