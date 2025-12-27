@@ -65,6 +65,23 @@ Developed by Amin Davodian
 
 ---
 
+## 🚀 از اینجا شروع کنید!
+
+> [!IMPORTANT]
+> **برای شروع کارگاه، این فایل را باز کنید:**
+>
+> ### 📘 **[WORKSHOP.md](WORKSHOP.md)** ← **شروع اینجا**
+>
+> این راهنمای اصلی است که گام‌به‌گام شما را از صفر تا ساخت کامل میم کوین همراهی می‌کند.
+
+<div align="center">
+
+[![شروع کارگاه](https://img.shields.io/badge/🎯_شروع_کارگاه-WORKSHOP.md-00D9FF?style=for-the-badge)](WORKSHOP.md)
+
+</div>
+
+---
+
 ## 📂 ساختار ریپو
 
 ```
@@ -133,15 +150,25 @@ anchor test --skip-local-validator
 
 ---
 
-## 📚 مستندات ارائه
+## 📚 مستندات کارگاه
+
+### 🎯 راهنمای اصلی
+
+| فایل | توضیح | اولویت |
+|---|---|:---:|
+| [🚀 **WORKSHOP.md**](WORKSHOP.md) | **راهنمای گام‌به‌گام کامل** — از اینجا شروع کنید! | ⭐ اول |
+
+### 📖 مستندات تکمیلی
 
 | فایل | توضیح |
 |---|---|
-| [📖 PRESENTATION_WALKTHROUGH.md](PRESENTATION_WALKTHROUGH.md) | **اسکریپت اصلی** — از صفر تا قهرمان |
+| [📖 PRESENTATION_WALKTHROUGH.md](PRESENTATION_WALKTHROUGH.md) | اسکریپت کامل ارائه |
 | [📋 docs/00-runbook-1h.md](docs/00-runbook-1h.md) | زمان‌بندی و چک‌لیست کلاس |
-| [⚡ docs/01-token-2022-cli.md](docs/01-token-2022-cli.md) | ساخت توکن با CLI |
-| [🧱 docs/02-anchor-sat.md](docs/02-anchor-sat.md) | پروژه Anchor |
+| [⚡ docs/01-token-2022-cli.md](docs/01-token-2022-cli.md) | راهنمای جامع CLI |
+| [🧱 docs/02-anchor-sat.md](docs/02-anchor-sat.md) | پروژه Anchor و SAT |
 | [💰 docs/03-raydium-cpmm.md](docs/03-raydium-cpmm.md) | قیمت‌گذاری با Raydium |
+| [🔧 docs/04-troubleshooting.md](docs/04-troubleshooting.md) | حل مشکلات رایج |
+| [🎓 docs/07-no-compile-class-guide.md](docs/07-no-compile-class-guide.md) | استراتژی بدون کامپایل |
 
 ---
 

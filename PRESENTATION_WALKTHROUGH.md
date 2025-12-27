@@ -45,6 +45,16 @@ Developed by Amin Davodian
 
 ---
 
+> [!TIP]
+> **برای کارگاه عملی گام‌به‌گام، به این فایل مراجعه کنید:**
+>
+> ### 📘 [WORKSHOP.md](WORKSHOP.md) — راهنمای عملی کامل
+>
+> این فایل (PRESENTATION_WALKTHROUGH) برای ارائه‌دهنده است.  
+> **WORKSHOP.md** برای دانشجو/شرکت‌کننده است.
+
+---
+
 ## 🎯 مقدمه و اهداف
 
 <div align="center">
@@ -139,8 +149,25 @@ pub mint: Account<'info, Mint>,
 | Non-Transferable | ❌ | ✅ |
 | Metadata Extensions | ❌ | ✅ |
 
+**تفاوت عملی:**
+
+```bash
+# SPL Token (قدیمی):
+spl-token create-token
+# Program ID: TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA
+
+# Token-2022 (جدید):
+spl-token create-token --program-id TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb
+# Program ID: TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb
+```
+
 > [!IMPORTANT]
-> برای پروژه‌های جدید، استفاده از **Token-2022** توصیه می‌شود!
+> **هر بار که `spl-token create-token` اجرا می‌کنید:**
+> - یک Mint Address **جدید و منحصر به فرد** ساخته می‌شود
+> - می‌توانید صدها توکن مختلف بسازید
+> - هر توکن = یک mint address جدید
+>
+> **این تفاوت اصلی با Anchor Program است که در بخش بعدی توضیح می‌دهیم.**
 
 ---
 
