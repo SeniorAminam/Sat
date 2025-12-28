@@ -96,22 +96,29 @@ echo "━━━━━━━━━━━━━━━━━━━━━━━━�
 > [!TIP]
 > اگر ابزاری نصب نیست، به فایل [docs/01-token-2022-cli.md](docs/01-token-2022-cli.md) بخش "نصب" مراجعه کنید.
 
-### 💰 تنظیم کیف پول Devnet
+### 💰 مرحله ۰.۱: ایزوله‌سازی و تنظیم کیف پول Devnet
+
+> [!IMPORTANT]
+> برای اینکه پروژه‌های قبلی مزاحم کار ما نشوند، یک محیط کاملاً پاک (Clean) ایجاد می‌کنیم.
 
 ```bash
-# تنظیم شبکه روی Devnet
+# ۱. ساخت پوشه کار جدید
+mkdir ~/solana-workshop-live && cd ~/solana-workshop-live
+
+# ۲. تنظیم شبکه روی Devnet
 solana config set --url devnet
 
-# تنظیم کیف پول (اگر دارید)
-solana config set --keypair ~/.config/solana/devnet.json
+# ۳. ساخت کیف پول جدید مخصوص همین کلاس
+solana-keygen new --outfile owner.json --no-bip39-passphrase
 
-# اگر کیف پول ندارید، یکی بسازید:
-# solana-keygen new --outfile ~/.config/solana/devnet.json
+# ۴. تنظیم CLI برای استفاده از این فایل
+solana config set --keypair owner.json
 
-# گرفتن SOL رایگان (2 SOL کافی است)
+# ۵. گرفتن SOL رایگان (2 SOL کافی است)
 solana airdrop 2
 
-# بررسی موجودی
+# ۶. بررسی موجودی و آدرس
+solana address
 solana balance
 ```
 
@@ -150,8 +157,10 @@ solana balance
 
 ```bash
 # ساخت توکن جدید با Token-2022
+# ⚠️ نکته مهم: فلگ --enable-metadata الزامی است تا بتوانیم metadata اضافه کنیم!
 spl-token create-token \
   --program-id TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb \
+  --enable-metadata \
   --decimals 9
 ```
 
@@ -507,8 +516,11 @@ spl-token authorize $MY_TOKEN freeze --disable
 
 1. **توکن دوم بسازید:**
    ```bash
-   # یک توکن جدید با نام و نماد متفاوت
-   spl-token create-token --program-id TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb
+   # یک توکن جدید با نام و نماد متفاوت (--enable-metadata الزامی است!)
+   spl-token create-token \
+     --program-id TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb \
+     --enable-metadata \
+     --decimals 9
    ```
 
 2. **متادیتای سفارشی اضافه کنید:**

@@ -156,8 +156,11 @@ pub mint: Account<'info, Mint>,
 spl-token create-token
 # Program ID: TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA
 
-# Token-2022 (جدید):
-spl-token create-token --program-id TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb
+# Token-2022 (جدید) - با metadata فعال:
+spl-token create-token \
+  --program-id TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb \
+  --enable-metadata \
+  --decimals 9
 # Program ID: TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb
 ```
 
@@ -269,22 +272,29 @@ echo "✅ محیط آماده است!"
 
 ---
 
-### 💰 تنظیم کیف پول Devnet
+### 💰 تنظیم کیف پول Devnet (ایزوله‌سازی برای کلاس)
+
+> [!IMPORTANT]
+> برای اینکه پروژه‌های قبلی مزاحم کار ما نشوند، یک محیط کاملاً پاک (Clean) ایجاد می‌کنیم.
 
 ```bash
-# تنظیم شبکه روی Devnet
+# ۱. ساخت پوشه کار جدید مخصوص کلاس
+mkdir ~/solana-class-live && cd ~/solana-class-live
+
+# ۲. تنظیم شبکه روی Devnet
 solana config set --url devnet
 
-# ساخت کیف پول جدید (اگر ندارید)
-solana-keygen new --outfile ~/.config/solana/devnet.json
+# ۳. ساخت کیف پول جدید مخصوص همین ارائه
+solana-keygen new --outfile owner.json --no-bip39-passphrase
 
-# تنظیم کیف پول پیش‌فرض
-solana config set --keypair ~/.config/solana/devnet.json
+# ۴. تنظیم CLI برای استفاده از این فایل
+solana config set --keypair owner.json
 
-# گرفتن SOL رایگان (Airdrop)
+# ۵. گرفتن SOL رایگان (Airdrop)
 solana airdrop 2
 
-# بررسی موجودی
+# ۶. بررسی موجودی و آدرس
+solana address
 solana balance
 ```
 
@@ -307,7 +317,11 @@ solana balance
 
 ```bash
 # ساخت توکن جدید با Token-2022
-spl-token create-token --program-id TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb
+# ⚠️ نکته مهم: فلگ --enable-metadata الزامی است!
+spl-token create-token \
+  --program-id TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb \
+  --enable-metadata \
+  --decimals 9
 
 # خروجی:
 # Creating token 7xKXtg...

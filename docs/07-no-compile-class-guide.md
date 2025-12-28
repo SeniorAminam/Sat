@@ -319,8 +319,11 @@ yarn install
 ### ✅ تست قبل از کلاس
 
 ```bash
-# تست Token-2022 (کامل)
-spl-token create-token --program-id TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb
+# تست Token-2022 (کامل) - با metadata فعال!
+spl-token create-token \
+  --program-id TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb \
+  --enable-metadata \
+  --decimals 9
 
 # تست SAT (Explorer فقط)
 cd sat
