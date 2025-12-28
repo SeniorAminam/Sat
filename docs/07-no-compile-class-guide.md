@@ -87,12 +87,33 @@ pub mint: Account<'info, Mint>,
 > [!TIP]
 > این بخش **کاملاً واقعی** است و یک توکن جدید می‌سازد!
 
+### 🛡️ مرحله ۰: ایزوله‌سازی محیط (بسیار مهم برای کلاس)
+
+> [!IMPORTANT]
+> برای جلوگیری از تداخل با پروژه‌های Anchor قبلی، همیشه یک پوشه و کیف‌پول **کاملاً جدید** بسازید.
+
+```bash
+# ۱. ساخت پوشه جدید و ورود به آن
+mkdir ~/solana-class-live && cd ~/solana-class-live
+
+# ۲. ساخت کیف‌پول جدید مخصوص کلاس (owner.json)
+solana-keygen new --outfile owner.json --no-bip39-passphrase
+
+# ۳. تنظیم Solana CLI برای استفاده از این کیف‌پول و شبکه Devnet
+solana config set --url devnet
+solana config set --keypair owner.json
+
+# ۴. بررسی آدرس و گرفتن SOL
+solana address
+solana airdrop 2
+solana balance
+```
+
 ### ✅ Preflight
 
 ```bash
-# داخل WSL
-solana config set --url devnet
-solana config set --keypair ~/.config/solana/devnet.json
+# بررسی نهایی قبل از شروع
+solana config get
 solana balance
 ```
 
